@@ -1,0 +1,35 @@
+--- http_origis/httpd-2.4.6/os/unix/unixd.c	2013-03-11 17:38:39.000000000 +0100
++++ httpd-2.4.6/os/unix/unixd.c	2014-02-28 23:49:49.878147814 +0100
+@@ -120,6 +120,7 @@
+ 
+ APR_HOOK_STRUCT(
+                APR_HOOK_LINK(get_suexec_identity)
++               APR_HOOK_LINK(assign_proc_to_cgroup)
+ )
+ 
+ AP_IMPLEMENT_HOOK_RUN_FIRST(ap_unix_identity_t *, get_suexec_identity,
+@@ -192,6 +193,10 @@
+     return apr_proc_create(newproc, newprogname, newargs, env, attr, p);
+ }
+ 
++AP_IMPLEMENT_HOOK_RUN_FIRST(int, assign_proc_to_cgroup,
++                         (const request_rec *r, apr_proc_t *newproc, ap_unix_identity_t *ugid ), 
++                         (r, newproc, ugid), DECLINED)
++
+ AP_DECLARE(apr_status_t) ap_os_create_privileged_process(
+     const request_rec *r,
+     apr_proc_t *newproc, const char *progname,
+@@ -205,8 +210,12 @@
+         return apr_proc_create(newproc, progname, args, env, attr, p);
+     }
+ 
+-    return ap_unix_create_privileged_process(newproc, progname, args, env,
++    apr_status_t status = ap_unix_create_privileged_process(newproc, progname, args, env,
+                                               attr, ugid, p);
++    
++    ap_run_assign_proc_to_cgroup(r, newproc, ugid);
++
++    return status;
+ }
+ 
+ /* XXX move to APR and externalize (but implement differently :) ) */

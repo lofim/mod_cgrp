@@ -1,0 +1,10 @@
+--- http_origis/httpd-2.4.6/os/unix/unixd.h	2011-10-09 20:35:23.000000000 +0200
++++ httpd-2.4.6/os/unix/unixd.h	2014-02-27 17:58:41.163546725 +0100
+@@ -60,6 +60,7 @@
+ 
+ AP_DECLARE_HOOK(ap_unix_identity_t *, get_suexec_identity,(const request_rec *r))
+ 
++AP_DECLARE_HOOK(int, assign_proc_to_cgroup, (const request_rec *r, apr_proc_t *newproc, ap_unix_identity_t *ugid))
+ 
+ /* Default user name and group name. These may be specified as numbers by
+  * placing a # before a number */
