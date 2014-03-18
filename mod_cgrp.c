@@ -56,7 +56,7 @@ static void *cgrp_create_server_config(apr_pool_t *p, server_rec *s)
     cgrp_server_config *conf =
     (cgrp_server_config *) apr_pcalloc(p, sizeof(cgrp_server_config));
 
-    //alocate confing entries array
+    //alocate config entries array
     conf->entries = apr_array_make(p, 10, sizeof(uid_cgrp_entry_t));
     
     conf->enabled = MOD_DISABLED;
